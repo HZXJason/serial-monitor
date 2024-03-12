@@ -922,7 +922,6 @@ impl MyApp {
 
     pub fn commands_gui(&mut self, ui: &mut egui::Ui) {
         const LINESPREAD: f32 = 10.0;
-
         ui.heading("Commands");
         ui.add_space(LINESPREAD);
         egui::ScrollArea::vertical()
@@ -931,7 +930,7 @@ impl MyApp {
             .max_width(ui.available_width())
             .max_height(ui.available_height())
             .show(ui, |ui| {
-                ui.vertical(|ui|{    
+                ui.vertical(|ui|{ 
                     ui.horizontal(|ui| {
                         ui.vertical(|ui| {
                             for cmd in &mut self.gui_conf.commands {
@@ -960,6 +959,7 @@ impl MyApp {
                                             .clip_text(true)
                                             .desired_width(ui.available_width() - 90.0),
                                     );
+                                    
                                     let send_cmd =
                                         cmd.cmd.clone().replace("\\r", "\r").replace("\\n", "\n");
                                     if ui.button("Send").clicked() {
@@ -977,7 +977,7 @@ impl MyApp {
                                 })
                                 .inner
                             })
-                        })
+                        });
                     });                    
                     ui.add_space(LINESPREAD);
 
@@ -991,40 +991,19 @@ impl MyApp {
                             editing: false,
                         })
                     };
-                    ui.separator();
-
-                    ui.horizontal(|ui|{
-                        
-                        if ui
-                            .add_sized([ui.available_width()/2.0,20.0], Button::new("Tmp Commond 1")).clicked(){
-                                if let Err(err) = self.send_tx.send("Tmp_send_cmd".to_owned()) {
-                                    print_to_console(
-                                        &self.print_lock,
-                                        Print::Error(format!(
-                                            "send_tx thread send failed: {:?}",
-                                            err
-                                        )),
-                                    );
-                                }  
-                        }
-                        if ui
-                            .add_sized([ui.available_width(),20.0], Button::new("Tmp Commond 2")).clicked(){
-                                if let Err(err) = self.send_tx.send("Tmp_send_cmd2".to_owned()) {
-                                    print_to_console(
-                                        &self.print_lock,
-                                        Print::Error(format!(
-                                            "send_tx thread send failed: {:?}",
-                                            err
-                                        )),
-                                    );
-                                }  
-                        }
-
-
-                    });
-
                 });
                         
             });
+    }
+
+    pub fn left_commands_ui (&mut self,ui: &mut egui::Ui){
+        egui::ScrollArea::vertical()
+        .id_source("left_commands_scroll_area")
+        .auto_shrink([false; 2])
+        .max_width(ui.available_width())
+        .max_height(ui.available_height())
+        .show(ui, |ui| {
+            ui.label("test");
+        });
     }
 }

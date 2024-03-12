@@ -28,6 +28,7 @@ const MAX_FPS: f64 = 60.0;
 
 const DEFAULT_FONT_ID: FontId = FontId::new(14.0, FontFamily::Monospace);
 pub const RIGHT_PANEL_WIDTH: f32 = 350.0;
+pub const LEFT_PANEL_WIDTH: f32 = 250.0;
 const BAUD_RATES: &[u32] = &[
     300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 74880, 115200, 230400, 128000, 460800,
     576000, 921600,
@@ -268,6 +269,7 @@ pub struct MyApp {
     do_not_show_clear_warning: bool,
     need_initialize: bool,
     right_panel_expanded: bool,
+    left_panel_expanded: bool,
     active_tab: Option<GuiTabs>,
 }
 
@@ -322,6 +324,7 @@ impl MyApp {
             show_warning_window: WindowFeedback::None,
             need_initialize: false,
             right_panel_expanded: true,
+            left_panel_expanded: true,
             active_tab: Some(GuiTabs::PlotOptions),
             record_options_tx,
         }
@@ -547,6 +550,54 @@ impl MyApp {
         );
     }
 
+    fn draw_left_side_panel(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::SidePanel::show_animated_between(
+            ctx,
+            self.left_panel_expanded,
+            SidePanel::left("settings left panel collapsed")
+                .min_width(0.0)
+                .resizable(false),
+            SidePanel::left("settings left panel expanded")
+                .exact_width(LEFT_PANEL_WIDTH)
+                .resizable(false),
+            |ui, how_expanded| {
+                // ui.set_visible(true);
+                if how_expanded == 0.0 {
+                    ui.add_space(10.0);
+                    if ui
+                        .button(egui::RichText::new(
+                            egui_phosphor::regular::CARET_LEFT.to_string(),
+                        ))
+                        .clicked()
+                    {
+                        self.left_panel_expanded = true;
+                    };
+                } else {
+                    ui.horizontal(|ui| {
+                        if ui
+                            .heading("Options")
+                            .interact(egui::Sense::click())
+                            .clicked()
+                        {
+                            self.left_panel_expanded = false;
+                        };
+                    });
+                    ui.add_space(5.0);
+                    egui::ScrollArea::vertical()
+                        .id_source("settings scroll area")
+                        .auto_shrink(false)
+                        .show(ui, |ui| {
+                            self.left_commands_ui(ui);
+                        });
+                }
+            },
+        );
+    }
+
+
+
+
+
     fn paint_connection_indicator(&self, ui: &mut egui::Ui) {
         let (color, color_stroke) = if !self.connected_to_device {
             ui.add(egui::Spinner::new());
@@ -572,6 +623,7 @@ impl eframe::App for MyApp {
         }
 
         self.draw_side_panel(ctx, frame);
+        self.draw_left_side_panel(ctx, frame);
         self.draw_central_panel(ctx);
         ctx.request_repaint();
 
