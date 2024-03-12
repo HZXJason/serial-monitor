@@ -141,6 +141,21 @@ pub struct Command {
 }
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+pub struct Directive{
+    start_freq: f32,
+    stop_freq: f32,
+    step: f32,
+    holdtime: f32,
+    iq_select: String,
+    pid_step: f32,
+    track_amp: f32,
+    track_eps: f32,
+    pid_holdtime: f32,
+    delay_ms: f32,
+
+}
+
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct GuiSettingsContainer {
     pub device: String,
     pub baud: u32,
