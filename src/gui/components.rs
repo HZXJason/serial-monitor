@@ -1003,7 +1003,111 @@ impl MyApp {
         .max_width(ui.available_width())
         .max_height(ui.available_height())
         .show(ui, |ui| {
-            ui.label("test");
+
+            ui.vertical(|ui|{
+                ui.horizontal(|ui|{
+                    if ui.add_sized([ui.available_width(),20.0],Button::new("Stop")).clicked() {
+                        if let Err(err) = self.send_tx.send("stop\r\n\r\n".to_string()) {
+                            print_to_console(
+                                &self.print_lock,
+                                Print::Error(format!(
+                                    "send_tx thread send failed: {:?}",
+                                    err
+                                )),
+                            );
+                        }
+                    }
+                });
+                ui.add_space(5.0);
+                ui.horizontal(|ui|{
+                    ui.add(
+                        TextEdit::singleline(&mut "Base Frequency".to_owned())
+                            .frame(false)
+                            .desired_width(60.0)
+                            .clip_text(false),
+                    );
+
+                    ui.add(
+                        TextEdit::singleline(&mut self.gui_conf.directive.start_freq)
+                            .code_editor()
+                            .lock_focus(false)
+                            .clip_text(true)
+                            .desired_width(ui.available_width()-40.0),
+                    );
+                    if ui.button("auto").clicked(){
+                        let send_cmd="auto_conf ".to_string() + &self.gui_conf.directive.start_freq + &"\r\n\r\n".to_string();
+                        if let Err(err) = self.send_tx.send(send_cmd) {
+                            print_to_console(
+                                &self.print_lock,
+                                Print::Error(format!(
+                                    "send_tx thread send failed: {:?}",
+                                    err
+                                )),
+                            );
+                        }
+                    }
+                });
+
+                ui.add_space(5.0);
+                ui.horizontal(|ui|{
+                    ui.add(
+                        TextEdit::singleline(&mut "Set phase".to_owned())
+                            .frame(false)
+                            .desired_width(60.0)
+                            .clip_text(false),
+                    );
+                    ui.add(
+                        TextEdit::singleline(&mut self.gui_conf.directive.phase)
+                            .code_editor()
+                            .lock_focus(false)
+                            .clip_text(true)
+                            .desired_width(ui.available_width()-40.0),
+                    );
+                    if ui.button("set").clicked(){
+                        let send_cmd="set_phase ".to_string() + &self.gui_conf.directive.phase + &"\r\n\r\n".to_string();
+                        if let Err(err) = self.send_tx.send(send_cmd) {
+                            print_to_console(
+                                &self.print_lock,
+                                Print::Error(format!(
+                                    "send_tx thread send failed: {:?}",
+                                    err
+                                )),
+                            );
+                        }
+                    }
+                });
+
+                ui.add_space(5.0);
+                ui.horizontal(|ui|{
+                    ui.add(
+                        TextEdit::singleline(&mut "Set bias".to_owned())
+                            .frame(false)
+                            .desired_width(60.0)
+                            .clip_text(false),
+                    );
+                    ui.add(
+                        TextEdit::singleline(&mut self.gui_conf.directive.bias)
+                            .code_editor()
+                            .lock_focus(false)
+                            .clip_text(true)
+                            .desired_width(ui.available_width()-40.0),
+                    );
+                    if ui.button("set").clicked(){
+                        let send_cmd="set_bias ".to_string() + &self.gui_conf.directive.bias + &"\r\n\r\n".to_string();
+                        if let Err(err) = self.send_tx.send(send_cmd) {
+                            print_to_console(
+                                &self.print_lock,
+                                Print::Error(format!(
+                                    "send_tx thread send failed: {:?}",
+                                    err
+                                )),
+                            );
+                        }
+                    }
+                });
+
+
+            });
         });
     }
 }

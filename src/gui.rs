@@ -11,6 +11,7 @@ use eframe::egui::{
 };
 use eframe::{egui, Storage};
 use egui_plot::{log_grid_spacer, Legend, Line, Plot, PlotPoint, PlotPoints};
+use font_kit::sources::directwrite;
 use preferences::Preferences;
 use serde::{Deserialize, Serialize};
 use serialport::{DataBits, FlowControl, Parity, StopBits};
@@ -142,19 +143,17 @@ pub struct Command {
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct Directive{
-    start_freq: f32,
-    stop_freq: f32,
-    step: f32,
-    holdtime: f32,
+    start_freq: String,
+    stop_freq: String,
+    step: String,
+    holdtime: String,
     iq_select: String,
-    pid_step: f32,
-    track_amp: f32,
-    track_eps: f32,
-    pid_holdtime: f32,
-    delay_ms: f32,
-
+    track_amp: String,
+    track_eps: String,
+    delay_ms: String,
+    bias: String,
+    phase: String,
 }
-
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct GuiSettingsContainer {
     pub device: String,
@@ -168,6 +167,7 @@ pub struct GuiSettingsContainer {
     pub raw_traffic_options: RawTrafficOptions,
     pub record_options: RecordOptions,
     pub commands: Vec<Command>,
+    pub directive: Directive,
 }
 
 impl Default for GuiSettingsContainer {
@@ -188,6 +188,18 @@ impl Default for GuiSettingsContainer {
                 cmd: "".to_owned(),
                 editing: false,
             }],
+            directive:Directive{
+                start_freq:String::from("9998000"),
+                stop_freq:String::from("0"),
+                step: String::from("0.05"),
+                holdtime: String::from("1"),
+                iq_select:String::from("i"),
+                track_amp: String::from("0"),
+                track_eps: String::from("5"),
+                delay_ms: String::from("0.5"),
+                bias: String::from(" "),
+                phase: String::from(" "), 
+            },
         }
     }
 }
@@ -566,6 +578,9 @@ impl MyApp {
     }
 
     fn draw_left_side_panel(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+
+        
+
         egui::SidePanel::show_animated_between(
             ctx,
             self.left_panel_expanded,
